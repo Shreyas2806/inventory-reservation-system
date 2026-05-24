@@ -5,6 +5,7 @@
       "schedule": "0 0 * * *"
     }
   ],
+  "regions": ["sin1"],
   "build": {
     "env": {
       "NEXT_TELEMETRY_DISABLED": "1"

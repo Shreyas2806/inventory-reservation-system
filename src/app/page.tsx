@@ -72,11 +72,6 @@ export default async function HomePage() {
           <span className="text-white/90">Before It&apos;s Gone.</span>
         </h1>
 
-        <p className="text-gray-400 max-w-lg mx-auto text-lg leading-relaxed">
-          Powered by atomic PostgreSQL transactions.
-          When 5 users race for the last item —{" "}
-          <span className="text-violet-300 font-semibold">exactly one wins</span>.
-        </p>
 
         {/* Stats */}
         <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 pt-4">

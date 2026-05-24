@@ -1,13 +1,43 @@
 import { ProductCard } from "@/components/ProductCard";
 import { ProductWithInventory } from "@/types";
+import { prisma } from "@/lib/prisma";
 
+// Force dynamic rendering — this page queries the DB and must not be
+// statically pre-rendered at build time (would hang on DB connection)
+export const dynamic = "force-dynamic";
+
+// Query the database directly — avoids HTTP self-fetch that hangs during `next build`
 async function getProducts(): Promise<ProductWithInventory[]> {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   try {
-    const res = await fetch(`${baseUrl}/api/products`, { cache: "no-store" });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return data.data ?? [];
+    const products = await prisma.product.findMany({
+      include: {
+        inventories: {
+          include: {
+            warehouse: {
+              select: { id: true, name: true, location: true },
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: "asc" },
+    });
+
+    return products.map((product) => ({
+      id: product.id,
+      name: product.name,
+      description: product.description ?? null,
+      imageUrl: product.imageUrl ?? null,
+      createdAt: product.createdAt.toISOString(),
+      inventories: product.inventories.map((inv) => ({
+        id: inv.id,
+        warehouseId: inv.warehouseId,
+        warehouseName: inv.warehouse.name,
+        warehouseLocation: inv.warehouse.location ?? null,
+        totalStock: inv.totalStock,
+        reservedStock: inv.reservedStock,
+        availableStock: inv.totalStock - inv.reservedStock,
+      })),
+    }));
   } catch {
     return [];
   }

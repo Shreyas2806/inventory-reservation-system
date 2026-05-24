@@ -4,5 +4,11 @@
       "path": "/api/cron/cleanup",
       "schedule": "0 0 * * *"
     }
-  ]
+  ],
+  "build": {
+    "env": {
+      "NEXT_TELEMETRY_DISABLED": "1"
+    }
+  }
 }
+
